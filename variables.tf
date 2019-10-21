@@ -22,9 +22,15 @@ variable "name" {
   default     = "app"
 }
 
+variable "security_group_id" {
+  type        = "string"
+  description = "Security group ID of the EFS"
+}
+
 variable "security_groups" {
   type        = "list"
   description = "Security group IDs to allow access to the EFS"
+  default     = []
 }
 
 variable "vpc_id" {

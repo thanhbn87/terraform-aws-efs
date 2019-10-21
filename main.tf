@@ -13,6 +13,7 @@ module "label" {
 locals {
   enabled  = "${var.enabled == "true"}"
   dns_name = "${join("", aws_efs_file_system.default.*.id)}.efs.${var.aws_region}.amazonaws.com"
+  security_group_id = "${local.enabled && var.security_group_id == "" ? aws_security_group.default.*.id : var.security_group_id }"
 }
 
 resource "aws_efs_file_system" "default" {
@@ -29,11 +30,11 @@ resource "aws_efs_mount_target" "default" {
   file_system_id  = "${join("", aws_efs_file_system.default.*.id)}"
   ip_address      = "${var.mount_target_ip_address}"
   subnet_id       = "${element(var.subnets, count.index)}"
-  security_groups = ["${join("", aws_security_group.default.*.id)}"]
+  security_groups = ["${join("", local.security_group_id)}"]
 }
 
 resource "aws_security_group" "default" {
-  count       = "${local.enabled ? 1 : 0}"
+  count       = "${local.enabled && var.security_group_id == "" ? 1 : 0}"
   name        = "${module.label.id}"
   description = "EFS"
   vpc_id      = "${var.vpc_id}"
