@@ -13,7 +13,7 @@ module "label" {
 locals {
   enabled  = "${var.enabled == "true"}"
   dns_name = "${join("", aws_efs_file_system.default.*.id)}.efs.${var.aws_region}.amazonaws.com"
-  security_group_id = "${local.enabled && var.security_group_id == "" ? aws_security_group.default.*.id : var.security_group_id }"
+  security_group_id = "${local.enabled && var.security_group_id == "" ? split("",aws_security_group.default.*.id) : var.security_group_id }"
 }
 
 resource "aws_efs_file_system" "default" {
